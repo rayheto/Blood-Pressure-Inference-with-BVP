@@ -1,12 +1,16 @@
 # Blood Pressure Inference with BVP
 
-The independent ESP32-S3 PPG-only prototype and its final VitalDB-trained artifacts are in [tiny-bp-esp32/](tiny-bp-esp32/README.md).
-
 **Cuffless blood pressure estimation from physiological signals using Catch22 + entropy feature extraction, ensemble learning, and deep learning.**
 
 Two-track experiment: handcrafted features + traditional ML vs. learned features + deep learning. 2-configuration ablation (PPG vs PPG+ECG) tests whether adding ECG to PPG improves cuffless BP estimation in a wearable-plausible setup.
 
 **Dataset**: [PulseDB v2.0](https://github.com/pulselabteam/PulseDB) -- 5.2M segments, 5,361 subjects, MIMIC-III (USA) + VitalDB (South Korea)
+
+## ESP32-S3 PPG prototype
+
+[`tiny-bp-esp32/`](tiny-bp-esp32/README.md) contains a small PPG-only 1D CNN, its training and export scripts, an ESP32-S3 INT8 model, and ESP-IDF firmware. This experiment uses VitalDB operating-room PPG and invasive arterial-pressure labels; it is separate from the PulseDB experiments described below.
+
+The model takes 10 seconds of PPG at 125 Hz and estimates SBP and DBP. In a subject-disjoint test of 32 people and 3,200 windows, its float-model MAE was **13.47 mmHg SBP / 7.26 mmHg DBP**. ESP-PPQ simulation of the INT8 model gave **13.62 / 7.25 mmHg**. The firmware currently replays a real PPG window through a sample interface designed for a future live sensor. Wrist PPG performance and XIAO ESP32-S3 board execution have not yet been verified. See the [model and firmware instructions](tiny-bp-esp32/README.md) and [sensor interface](tiny-bp-esp32/firmware/SENSOR_INTERFACE.md).
 
 ---
 

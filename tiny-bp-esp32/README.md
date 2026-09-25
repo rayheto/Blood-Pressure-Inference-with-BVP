@@ -1,22 +1,22 @@
-# Tiny BP for ESP32-S3 — final VitalDB run
+# Tiny BP for ESP32-S3
 
-This directory holds the **final all-eligible-case** PPG-only 1D CNN experiment and its ESP32-S3 firmware. It is separate from the repository's PulseDB experiments and does not replace their models or results. No intermediate checkpoints, prior pilot runs, or training data are committed here.
+This directory holds a PPG-only 1D CNN experiment using the eligible VitalDB cases and its ESP32-S3 firmware. It is separate from the repository's PulseDB experiments. Training data are not committed here.
 
-## Final artifacts
+## Model and firmware files
 
 | Path | Purpose |
 |---|---|
-| `model/best.pt` | Final PyTorch weights (11,818 parameters) |
+| `model/best.pt` | PyTorch weights (11,818 parameters) |
 | `model/tiny_bp.onnx` | Exported float model |
 | `model/preprocess.json` | 125 Hz, 1,250 samples, training mean/std, output scaling |
-| `model/metrics.json` | Final subject-disjoint validation and test results |
+| `model/metrics.json` | Subject-disjoint validation and test results |
 | `model/tiny_bp_kl_eval.json` | ESP-PPQ INT8 simulation on test windows |
 | `model/split_subjects.json` | Subject IDs for the fixed train/validation/test split |
-| `firmware/main/models/s3/model.espdl` | Final ESP32-S3 INT8 model used by firmware |
+| `firmware/main/models/s3/model.espdl` | ESP32-S3 INT8 model used by firmware |
 
 The training pool contained 3,075 subjects and 307,079 windows; validation had 26 subjects / 2,600 windows; the held-out test had 32 subjects / 3,200 windows. On that test set, the float model's SBP/DBP MAE was **13.47 / 7.26 mmHg**. The ESP-PPQ simulated INT8 MAE was **13.62 / 7.25 mmHg**. These are VitalDB operating-room PPG results, not wrist or clinical validation. The test set was inspected during model development, so model-selection claims need a new independent test set.
 
-`model.py`, `train.py`, `export_trained.py`, and `quantize.py` contain the model and training/export code. `train.py` accepts NPZ arrays `ppg_signals`, `sbp`, `dbp`, and `subjects`; the full raw dataset is external and is not in Git. The final weights came from a CPU training stage followed by GPU continuation from the best CPU weights; only the final selected checkpoint is included. See the script arguments for starting a new run. Install training and quantization requirements in separate Python environments because their ONNX dependencies differ.
+`model.py`, `train.py`, `export_trained.py`, and `quantize.py` contain the model and training/export code. `train.py` accepts NPZ arrays `ppg_signals`, `sbp`, `dbp`, and `subjects`; the full raw dataset is external and is not in Git. The included weights came from a CPU training stage followed by GPU continuation from the best CPU weights. See the script arguments for starting a new run. Install training and quantization requirements in separate Python environments because their ONNX dependencies differ.
 
 ## Firmware and sample input
 
