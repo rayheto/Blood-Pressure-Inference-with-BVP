@@ -81,7 +81,9 @@ StandardScaler                         ResNet-1D (baseline)
 
 ---
 
-## Key Results (CalFree Test Set, 111,600 samples)
+## Key Results
+
+### PulseDB CalFree test set (111,600 samples)
 
 CalFree is the hardest evaluation: test subjects have zero calibration data in training.
 
@@ -104,12 +106,23 @@ CalFree is the hardest evaluation: test subjects have zero calibration data in t
 | ResNet-1D | 13.84 | 0.253 | 7.90 | 0.315 | FAIL | D |
 
 **Key Findings:**
-- No model achieves AAMI clinical compliance (all SD > 8 mmHg)
+- No model in this PulseDB evaluation achieves AAMI clinical compliance (all SD > 8 mmHg)
 - ResNet-BiGRU DBP achieves BHS Grade C (40.8% within 5 mmHg, 69.7% within 10 mmHg)
 - DL outperforms classical ML on both SBP and DBP without any feature engineering
 - Adding ECG to PPG provides negligible improvement (+0.03 mmHg SBP MAE), suggesting PPG alone captures the relevant hemodynamic information
 - GradientSHAP reveals the model concentrates on timesteps 7.4-9.0s (last 2-3 seconds of the waveform) for SBP, and splits attention between early (0.5-0.7s) and late (8.7-9.5s) regions for DBP
 - Results consistent with Moulaeifard 2025 PulseDB benchmark (SBP MAE 13.9)
+
+### Tiny BP: VitalDB subject-disjoint test set (3,200 windows)
+
+The [ESP32-S3 PPG prototype](tiny-bp-esp32/README.md) uses 10-second, 125 Hz PPG windows from VitalDB. Its test set contains 32 subjects excluded from training and validation. Values below are in mmHg; INT8 results are from ESP-PPQ simulation, not a measurement on the board.
+
+| Model | SBP MAE | DBP MAE | SBP error SD | DBP error SD |
+|-------|--------:|--------:|-------------:|-------------:|
+| 1D CNN, float | 13.47 | 7.26 | 17.02 | 9.35 |
+| 1D CNN, INT8 simulation | 13.62 | 7.25 | — | — |
+
+For within-case windows separated by 60–300 seconds, the float model's predicted-versus-reference BP change correlation was 0.503 for SBP and 0.484 for DBP (2,842 window pairs). These results are from operating-room finger PPG and are **not directly comparable** to the PulseDB table above. They do not establish AAMI/ISO compliance or wrist PPG accuracy. Detailed metrics are in [`tiny-bp-esp32/model/metrics.json`](tiny-bp-esp32/model/metrics.json) and the [INT8 evaluation](tiny-bp-esp32/model/tiny_bp_kl_eval.json).
 
 ---
 
@@ -140,6 +153,7 @@ Blood-Pressure-Inference-with-BVP/
 ├── configs/                          # Model + feature + ablation configuration
 ├── tests/                            # 58 pytest tests + 24 Rust tests
 ├── results/                          # Evaluation metrics, leaderboards, SHAP analysis
+├── tiny-bp-esp32/                    # VitalDB PPG model and ESP32-S3 firmware
 ├── reports/                          # Proposal, milestone, final report (LaTeX)
 └── data/                             # PulseDB (gitignored, cluster-only, 963 GB)
 ```
