@@ -127,6 +127,10 @@ The ResNet models were **retrained here on VitalDB**; these numbers are not eval
 
 Tiny BP's ESP-PPQ INT8 simulation on these test windows had MAE **13.62 / 7.25 mmHg**; this is not a board measurement. For within-case windows separated by 60–300 seconds, Tiny BP's predicted-versus-reference BP change correlation was 0.503 for SBP and 0.484 for DBP (2,842 window pairs). These results use operating-room finger PPG and do not establish AAMI/ISO compliance or wrist PPG accuracy. The PulseDB table above uses a different test set and label-processing pipeline.
 
+### PPG upstroke experiment
+
+Four new Tiny BP models were trained from scratch with the same split, preprocessing, seed, and 20-epoch budget to test sensitivity to the pulse rising edge. On the same 3,200 VitalDB test windows, the raw-waveform control had SBP/DBP MAE **13.64 / 7.54 mmHg**. Replacing each detected rise with a straight line gave **13.65 / 7.51**; replacing it with a standardized late ramp gave **13.83 / 7.36**. A similarly sized early-fall alteration gave **13.87 / 8.00**. The case-paired 95% intervals for both upstroke variants' MAE differences from the raw control include zero. This experiment therefore does not show that these upstroke details are necessary for the model's absolute BP accuracy. It cannot determine whether the model internally learned a particular hand-designed feature. See the [protocol, saved weights, and results](tiny-bp-esp32/ablation/README.md).
+
 ---
 
 ## Repository Structure

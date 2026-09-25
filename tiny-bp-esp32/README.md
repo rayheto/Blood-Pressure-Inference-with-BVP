@@ -14,8 +14,11 @@ This directory holds a PPG-only 1D CNN experiment using the eligible VitalDB cas
 | `model/split_subjects.json` | Subject IDs for the fixed train/validation/test split |
 | `firmware/main/models/s3/model.espdl` | ESP32-S3 INT8 model used by firmware |
 | `comparison/same_windows_metrics.json` | Tiny BP and retrained ResNet metrics on identical VitalDB test windows |
+| `ablation/` | Matched PPG upstroke experiment, four weights, and test metrics |
 
 The training pool contained 3,075 subjects and 307,079 windows; validation had 26 subjects / 2,600 windows; the held-out test had 32 subjects / 3,200 windows. On that test set, the float model's SBP/DBP MAE was **13.47 / 7.26 mmHg**. The ESP-PPQ simulated INT8 MAE was **13.62 / 7.25 mmHg**. These are VitalDB operating-room PPG results, not wrist or clinical validation. The test set was inspected during model development, so model-selection claims need a new independent test set.
+
+The [upstroke experiment](ablation/README.md) retrains this architecture with altered PPG rising edges and a matched raw-waveform control. Its 20-epoch raw control is separate from the longer-trained model above.
 
 ## Comparison on the same test windows
 
