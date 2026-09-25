@@ -1,0 +1,66 @@
+{
+  "test_source": "VitalDB direct PLETH/ART",
+  "same_test_windows": 3200,
+  "same_test_cases": 32,
+  "test_npz_sha256": "987d9443c36716eeab52636fe501d438378aae72183be9ca938f5e776005f7fb",
+  "inference": "PyTorch FP32 on saved checkpoints",
+  "comparison": {
+    "tiny_bp": {
+      "mae_sbp": 13.467523574829102,
+      "mae_dbp": 7.264293193817139,
+      "bias_sbp": -1.3279087543487549,
+      "bias_dbp": 0.2728284001350403,
+      "sd_sbp": 17.022449493408203,
+      "sd_dbp": 9.345333099365234,
+      "windows": 3200
+    },
+    "resnet1d": {
+      "mae_sbp": 13.422603607177734,
+      "mae_dbp": 7.298819065093994,
+      "bias_sbp": 0.7975335121154785,
+      "bias_dbp": -0.299376517534256,
+      "sd_sbp": 17.0531063079834,
+      "sd_dbp": 9.411108016967773,
+      "windows": 3200,
+      "vs_tiny_bp": {
+        "case_count": 32,
+        "mean_case_mae_difference_sbp_dbp": [
+          -0.044919028878211975,
+          0.03452569991350174
+        ],
+        "bootstrap_95pct_sbp": [
+          -0.7233469113707542,
+          0.6352826371788964
+        ],
+        "bootstrap_95pct_dbp": [
+          -0.22898482643067836,
+          0.2980757854878902
+        ]
+      }
+    },
+    "resnet_bigru": {
+      "mae_sbp": 13.200843811035156,
+      "mae_dbp": 7.676437854766846,
+      "bias_sbp": -3.009018898010254,
+      "bias_dbp": -1.4840750694274902,
+      "sd_sbp": 16.934200286865234,
+      "sd_dbp": 9.776111602783203,
+      "windows": 3200,
+      "vs_tiny_bp": {
+        "case_count": 32,
+        "mean_case_mae_difference_sbp_dbp": [
+          -0.266678124666214,
+          0.41214466094970703
+        ],
+        "bootstrap_95pct_sbp": [
+          -1.3616263955831527,
+          0.6861181959509849
+        ],
+        "bootstrap_95pct_dbp": [
+          -0.08478625416755675,
+          0.8787363827228545
+        ]
+      }
+    }
+  }
+}

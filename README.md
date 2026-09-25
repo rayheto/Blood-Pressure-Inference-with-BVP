@@ -10,7 +10,7 @@ Two-track experiment: handcrafted features + traditional ML vs. learned features
 
 [`tiny-bp-esp32/`](tiny-bp-esp32/README.md) contains a small PPG-only 1D CNN, its training and export scripts, an ESP32-S3 INT8 model, and ESP-IDF firmware. This experiment uses VitalDB operating-room PPG and invasive arterial-pressure labels; it is separate from the PulseDB experiments described below.
 
-The model takes 10 seconds of PPG at 125 Hz and estimates SBP and DBP. In a subject-disjoint test of 32 people and 3,200 windows, its float-model MAE was **13.47 mmHg SBP / 7.26 mmHg DBP**. ESP-PPQ simulation of the INT8 model gave **13.62 / 7.25 mmHg**. The firmware currently replays a real PPG window through a sample interface designed for a future live sensor. Wrist PPG performance and XIAO ESP32-S3 board execution have not yet been verified. See the [model and firmware instructions](tiny-bp-esp32/README.md) and [sensor interface](tiny-bp-esp32/firmware/SENSOR_INTERFACE.md).
+The model takes 10 seconds of PPG at 125 Hz and estimates SBP and DBP. On the same 32-person, 3,200-window VitalDB test set used for the comparison below, its float-model MAE was **13.47 mmHg SBP / 7.26 mmHg DBP**. The firmware currently replays a real PPG window through a sample interface designed for a future live sensor. Wrist PPG performance and XIAO ESP32-S3 board execution have not yet been verified. See the [model and firmware instructions](tiny-bp-esp32/README.md) and [sensor interface](tiny-bp-esp32/firmware/SENSOR_INTERFACE.md).
 
 ---
 
@@ -113,16 +113,19 @@ CalFree is the hardest evaluation: test subjects have zero calibration data in t
 - GradientSHAP reveals the model concentrates on timesteps 7.4-9.0s (last 2-3 seconds of the waveform) for SBP, and splits attention between early (0.5-0.7s) and late (8.7-9.5s) regions for DBP
 - Results consistent with Moulaeifard 2025 PulseDB benchmark (SBP MAE 13.9)
 
-### Tiny BP: VitalDB subject-disjoint test set (3,200 windows)
+### Common VitalDB test set (32 subjects, 3,200 windows)
 
-The [ESP32-S3 PPG prototype](tiny-bp-esp32/README.md) uses 10-second, 125 Hz PPG windows from VitalDB. Its test set contains 32 subjects excluded from training and validation. Values below are in mmHg; INT8 results are from ESP-PPQ simulation, not a measurement on the board.
+The [ESP32-S3 PPG prototype](tiny-bp-esp32/README.md) and newly trained copies of this repository's ResNet-1D and ResNet-BiGRU architectures use the **same 3,075 training subjects, 26 validation subjects, preprocessing constants, and 32 test subjects**. All three float-model rows below were evaluated on exactly the same 3,200 10-second windows, using saved weights and PyTorch FP32 inference. Values are in mmHg.
 
-| Model | SBP MAE | DBP MAE | SBP error SD | DBP error SD |
-|-------|--------:|--------:|-------------:|-------------:|
-| 1D CNN, float | 13.47 | 7.26 | 17.02 | 9.35 |
-| 1D CNN, INT8 simulation | 13.62 | 7.25 | — | — |
+| Model trained on VitalDB | SBP MAE | DBP MAE | SBP error SD | DBP error SD |
+|--------------------------|--------:|--------:|-------------:|-------------:|
+| Tiny BP 1D CNN (11,818 parameters) | 13.47 | **7.26** | 17.02 | **9.35** |
+| ResNet-1D (988,225 parameters per target) | 13.42 | 7.30 | 17.05 | 9.41 |
+| ResNet-BiGRU (1,581,121 parameters per target) | **13.20** | 7.68 | **16.93** | 9.78 |
 
-For within-case windows separated by 60–300 seconds, the float model's predicted-versus-reference BP change correlation was 0.503 for SBP and 0.484 for DBP (2,842 window pairs). These results are from operating-room finger PPG and are **not directly comparable** to the PulseDB table above. They do not establish AAMI/ISO compliance or wrist PPG accuracy. Detailed metrics are in [`tiny-bp-esp32/model/metrics.json`](tiny-bp-esp32/model/metrics.json) and the [INT8 evaluation](tiny-bp-esp32/model/tiny_bp_kl_eval.json).
+The ResNet models were **retrained here on VitalDB**; these numbers are not evaluations of the original project's PulseDB-trained weights. Each ResNet target trained for 12 epochs with its best validation checkpoint selected. Tiny BP used a longer CPU/GPU training schedule, so this controls the test data and training pool, but not the optimization budget. Case-paired bootstrap 95% intervals for the MAE differences against Tiny BP all include zero; the small ranking differences are uncertain. See the [common-window metrics and saved comparison weights](tiny-bp-esp32/comparison/same_windows_metrics.json).
+
+Tiny BP's ESP-PPQ INT8 simulation on these test windows had MAE **13.62 / 7.25 mmHg**; this is not a board measurement. For within-case windows separated by 60–300 seconds, Tiny BP's predicted-versus-reference BP change correlation was 0.503 for SBP and 0.484 for DBP (2,842 window pairs). These results use operating-room finger PPG and do not establish AAMI/ISO compliance or wrist PPG accuracy. The PulseDB table above uses a different test set and label-processing pipeline.
 
 ---
 
