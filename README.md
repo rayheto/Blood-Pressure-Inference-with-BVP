@@ -1,5 +1,7 @@
 # Blood Pressure Inference with BVP
 
+The independent ESP32-S3 PPG-only prototype and its final VitalDB-trained artifacts are in [tiny-bp-esp32/](tiny-bp-esp32/README.md).
+
 **Cuffless blood pressure estimation from physiological signals using Catch22 + entropy feature extraction, ensemble learning, and deep learning.**
 
 Two-track experiment: handcrafted features + traditional ML vs. learned features + deep learning. 2-configuration ablation (PPG vs PPG+ECG) tests whether adding ECG to PPG improves cuffless BP estimation in a wearable-plausible setup.

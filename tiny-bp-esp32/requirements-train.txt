@@ -1,0 +1,5 @@
+numpy>=1.24,<3
+torch>=2.0
+onnx>=1.18
+onnxscript>=0.4
+tensorboard>=2.15

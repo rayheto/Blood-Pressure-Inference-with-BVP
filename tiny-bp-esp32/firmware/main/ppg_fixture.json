@@ -1,0 +1,18 @@
+{
+  "source": "VitalDB SNUADC/PLETH training window",
+  "caseid": "2158",
+  "subjectid": "3312",
+  "time_s": 1856,
+  "window_samples": 1250,
+  "sample_rate_hz": 125,
+  "raw_ppg_sha256": "7b2683819ce829beaf644ab12302dd623aaa4b74d94651d972479b43692c1756",
+  "reference_sbp_dbp_mmhg": [
+    119.90448760986328,
+    79.99392700195312
+  ],
+  "float_model_sbp_dbp_mmhg": [
+    106.75616455078125,
+    60.592281341552734
+  ],
+  "selection": "training subject nearest SBP 120 / DBP 80"
+}

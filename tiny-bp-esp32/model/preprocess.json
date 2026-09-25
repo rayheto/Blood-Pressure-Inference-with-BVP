@@ -1,0 +1,16 @@
+{
+  "sample_rate_hz": 125,
+  "window_samples": 1250,
+  "mean": 38.72176078141601,
+  "std": 10.759953651374795,
+  "output_order": [
+    "sbp",
+    "dbp"
+  ],
+  "onnx_output": "bp_half",
+  "output_offset_mmhg": [
+    0.0,
+    0.0
+  ],
+  "output_scale_mmhg": 2.0
+}
