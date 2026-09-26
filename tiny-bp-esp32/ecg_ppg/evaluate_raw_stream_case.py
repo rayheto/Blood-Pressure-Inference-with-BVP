@@ -33,6 +33,7 @@ def main():
     p.add_argument("--run", type=Path, required=True)
     p.add_argument("--trace", type=Path, help="Write per-window reference and predictions for plotting")
     p.add_argument("--heads", type=Path, help="Directory containing trained correction heads")
+    p.add_argument("--rise-head", type=Path, help="Rise-aware correction checkpoint")
     p.add_argument("--report", type=Path, help="Override report JSON path")
     args = p.parse_args()
     tracks = get_track_map(args.tracks)
@@ -49,6 +50,9 @@ def main():
             models[name] = StreamingBloodPressure(args.run / "ppg_pat_rr.pt", args.preprocess,
                                                   mode="ppg_pat_rr",
                                                   correction_checkpoint=args.heads / f"{name}.pt")
+    if args.rise_head:
+        models["rise_head"] = StreamingBloodPressure(args.run / "ppg_pat_rr.pt", args.preprocess,
+                                                     mode="ppg_pat_rr", rise_checkpoint=args.rise_head)
     truth, preds, ages = [], {name: [] for name in models}, []
     first_time, first_bp = None, None
     for start in range(0, length - 1249, 1250):

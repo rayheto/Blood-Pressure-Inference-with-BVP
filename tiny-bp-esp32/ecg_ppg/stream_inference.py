@@ -12,6 +12,7 @@ from train_delta import DeltaBP
 from train_fusion import signal_features
 from train_pat_delta import pair_features
 from train_dynamic_head import DynamicHead, inputs as dynamic_inputs
+from train_rise_head import RiseHead, state_from_tensors
 
 
 WINDOW_SAMPLES = 1250
@@ -27,7 +28,7 @@ class StreamingBloodPressure:
     """
 
     def __init__(self, checkpoint: Path, preprocess: Path, device="cpu", mode="ppg_pat_rr",
-                 correction_checkpoint=None):
+                 correction_checkpoint=None, rise_checkpoint=None):
         if mode not in ("ppg_only", "ppg_pat_rr"):
             raise ValueError("mode must be ppg_only or ppg_pat_rr")
         self.mode = mode
@@ -40,11 +41,19 @@ class StreamingBloodPressure:
         self.model = DeltaBP(1, 4 if mode == "ppg_pat_rr" else 0).to(self.device).eval()
         self.model.load_state_dict(torch.load(checkpoint, map_location=self.device, weights_only=True))
         self.correction = None
+        self.rise = None
+        if correction_checkpoint is not None and rise_checkpoint is not None:
+            raise ValueError("Choose one correction checkpoint")
         if correction_checkpoint is not None:
             if mode != "ppg_pat_rr":
                 raise ValueError("Dynamic correction requires ppg_pat_rr mode")
             self.correction = DynamicHead().to(self.device).eval()
             self.correction.load_state_dict(torch.load(correction_checkpoint, map_location=self.device, weights_only=True))
+        if rise_checkpoint is not None:
+            if mode != "ppg_pat_rr":
+                raise ValueError("Rise correction requires ppg_pat_rr mode")
+            self.rise = RiseHead().to(self.device).eval()
+            self.rise.load_state_dict(torch.load(rise_checkpoint, map_location=self.device, weights_only=True))
         self.ecg_filter = butter(2, (5, 20), btype="bandpass", fs=SAMPLE_RATE_HZ, output="sos")
         self.calibration = None
         self.ppg_buffer = deque()
@@ -91,14 +100,21 @@ class StreamingBloodPressure:
             pat_valid = np.array([False])
             extra_tensor = None
         with torch.no_grad():
-            delta = self.model(torch.from_numpy(x0).to(self.device),
-                               torch.from_numpy(x1).to(self.device),
-                               torch.tensor([[age / MAX_CALIBRATION_AGE_S]], dtype=torch.float32, device=self.device),
-                               extra_tensor).cpu().numpy()[0]
+            before = torch.from_numpy(x0).to(self.device)
+            after = torch.from_numpy(x1).to(self.device)
+            elapsed = torch.tensor([[age / MAX_CALIBRATION_AGE_S]], dtype=torch.float32, device=self.device)
+            base_tensor = self.model(before, after, elapsed, extra_tensor)
+            delta = base_tensor.cpu().numpy()[0].copy()
             base_delta = delta.copy()
             if self.correction is not None:
                 state = dynamic_inputs(delta[None], cuff[None], np.array([age], np.float32))
                 delta += self.correction(torch.from_numpy(state).to(self.device)).cpu().numpy()[0]
+            if self.rise is not None:
+                state = state_from_tensors(self.model.encoder, before, after, base_tensor,
+                                           torch.from_numpy(cuff[None]).to(self.device),
+                                           torch.tensor([[age]], dtype=torch.float32, device=self.device),
+                                           extra_tensor)
+                delta += self.rise(state).cpu().numpy()[0]
         estimate = cuff + delta
         return {"status": "estimate", "window_end_s": float(window_end_s),
                 "elapsed_s": age, "sbp_mmhg": float(estimate[0]),
