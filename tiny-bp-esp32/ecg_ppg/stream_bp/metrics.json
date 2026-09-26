@@ -1,0 +1,64 @@
+{
+  "meta": {
+    "source": "VitalDB matched ECG_II+PLETH+ART",
+    "seed": 42,
+    "target": "online cuff-calibrated BP change up to 30 minutes",
+    "pair_sampling": "first_calibration",
+    "initialized_from": "D:\\BP_Training\\ecg_ppg\\stream_30min_all_windows",
+    "window_samples": 1250,
+    "sample_rate_hz": 125,
+    "horizon_seconds": 1800,
+    "train_pairs_available": 51991,
+    "train_anchors_per_epoch": 3021,
+    "validation_pairs": 446,
+    "test_pairs": 784,
+    "train_cases": 3021,
+    "test_cases": 32,
+    "model_inputs": [
+      "past calibration PPG",
+      "current PPG",
+      "elapsed time",
+      "delta R-to-PPG-valley PAT proxy",
+      "delta ECG RR",
+      "PAT validity flags"
+    ]
+  },
+  "models": {
+    "ppg_only": {
+      "best_epoch": 4,
+      "test": {
+        "sbp_change_mae": 14.263076782226562,
+        "sbp_change_rmse": 17.73809242248535,
+        "sbp_change_correlation": 0.8285486253699278,
+        "dbp_change_mae": 6.127608299255371,
+        "dbp_change_rmse": 7.757763385772705,
+        "dbp_change_correlation": 0.8258749058404945
+      }
+    },
+    "ppg_pat_rr": {
+      "best_epoch": 3,
+      "test": {
+        "sbp_change_mae": 13.713510513305664,
+        "sbp_change_rmse": 17.190807342529297,
+        "sbp_change_correlation": 0.8425919576514721,
+        "dbp_change_mae": 6.2624192237854,
+        "dbp_change_rmse": 8.13249397277832,
+        "dbp_change_correlation": 0.817180364276804
+      }
+    }
+  },
+  "zero_change_mae_sbp_dbp": [
+    25.0836238861084,
+    11.052946090698242
+  ],
+  "pat_rr_minus_ppg_mae_95pct_sbp_dbp": [
+    [
+      -1.695514440536499,
+      0.8034225940704331
+    ],
+    [
+      -0.6693686723709107,
+      0.7465433835983267
+    ]
+  ]
+}

@@ -1,5 +1,12 @@
 # Synchronized ECG + PPG training
 
+The [streaming BP change experiment](stream_bp/README.md) extends this work to cuff-calibrated, 10-second online PPG + ECG windows with a 30-minute horizon. It includes final checkpoints, chronological replay, and a continuous raw-recording smoke test.
+
+The separate [within-case 60–300-second BP change pilot](delta_60_300s/README.md) directly trains paired-window change predictors with PPG alone and with ECG + PPG. Its checkpoints, test metrics, and TensorBoard labels are documented there.
+The [explicit ECG timing follow-up](delta_pat_60_300s/README.md) compares the fixed PPG baseline against PPG plus change in R-to-PPG-valley delay, with and without ECG R-to-R interval change, on the same window pairs.
+The [five-seed repeat](delta_seed_repeats/README.md) retrains all three change predictors with seeds 42–46 and reports paired case-and-seed uncertainty.
+The [ECG-only five-seed baseline](ecg_only_seed_repeats/README.md) uses the same paired windows and shows how much change information lead-II ECG provides on its own.
+
 The existing VitalDB NPZ windows contain PPG and arterial-pressure labels, but no ECG. `build_ecg_windows.py` downloads the corresponding public `SNUADC/ECG_II` and `SNUADC/PLETH` tracks and recovers each saved PPG window's actual sample offset by waveform matching. The NPZ `time_s` field is integer seconds and is insufficient for ECG-to-PPG timing features. A window is retained only when its PPG match correlation is at least 0.96 and the aligned ECG has at least 98% finite samples with nontrivial amplitude. This produces a matched ECG subset; all compared models train and test on exactly these windows.
 
 `train_fusion.py` trains three from-scratch models and two follow-up correction models. All use the same fixed subject split, optimizer, seed, 30-epoch maximum, and validation-checkpoint rule:

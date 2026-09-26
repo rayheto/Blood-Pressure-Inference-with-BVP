@@ -1,0 +1,107 @@
+{
+  "cases": 32,
+  "evaluated_windows": 784,
+  "calibration": "first available test window in each case; invasive ART used to emulate cuff",
+  "horizon_seconds": 1800,
+  "zero_change": {
+    "sbp_change_mae": 25.083600997924805,
+    "sbp_change_rmse": 32.06687545776367,
+    "sbp_change_correlation": 0.0,
+    "dbp_change_mae": 11.052938461303711,
+    "dbp_change_rmse": 13.953802108764648,
+    "dbp_change_correlation": 0.0
+  },
+  "models": {
+    "ppg_only": {
+      "sbp_change_mae": 14.262085031318877,
+      "sbp_change_rmse": 17.736866783616215,
+      "sbp_change_correlation": 0.8285693677312977,
+      "dbp_change_mae": 6.128406955603967,
+      "dbp_change_rmse": 7.758422268983275,
+      "dbp_change_correlation": 0.8258471257227915
+    },
+    "ppg_pat_rr": {
+      "sbp_change_mae": 13.711554549924307,
+      "sbp_change_rmse": 17.18891558121377,
+      "sbp_change_correlation": 0.8426201956150352,
+      "dbp_change_mae": 6.26283809522699,
+      "dbp_change_rmse": 8.133085369499673,
+      "dbp_change_correlation": 0.8171683707405543
+    }
+  },
+  "by_elapsed_time": {
+    "10-299s": {
+      "windows": 117,
+      "models": {
+        "ppg_only": {
+          "sbp_change_mae": 13.731647711661127,
+          "sbp_change_rmse": 17.82171452307319,
+          "sbp_change_correlation": 0.8289695055686286,
+          "dbp_change_mae": 5.655437022893348,
+          "dbp_change_rmse": 7.063600410174365,
+          "dbp_change_correlation": 0.8915819439837924
+        },
+        "ppg_pat_rr": {
+          "sbp_change_mae": 12.12272581241579,
+          "sbp_change_rmse": 16.517517134026765,
+          "sbp_change_correlation": 0.8586378616909393,
+          "dbp_change_mae": 4.969804410623689,
+          "dbp_change_rmse": 6.714386017946388,
+          "dbp_change_correlation": 0.9027124884223865
+        }
+      }
+    },
+    "300-899s": {
+      "windows": 275,
+      "models": {
+        "ppg_only": {
+          "sbp_change_mae": 15.529294216632843,
+          "sbp_change_rmse": 18.883207375300156,
+          "sbp_change_correlation": 0.799637008258147,
+          "dbp_change_mae": 5.238131857243451,
+          "dbp_change_rmse": 6.616557369551973,
+          "dbp_change_correlation": 0.8148943366464285
+        },
+        "ppg_pat_rr": {
+          "sbp_change_mae": 14.713991265093739,
+          "sbp_change_rmse": 18.083810722331354,
+          "sbp_change_correlation": 0.8316810869899218,
+          "dbp_change_mae": 5.0601481420614505,
+          "dbp_change_rmse": 6.502196367319119,
+          "dbp_change_correlation": 0.8305952875953667
+        }
+      }
+    },
+    "900-1800s": {
+      "windows": 392,
+      "models": {
+        "ppg_only": {
+          "sbp_change_mae": 13.531418297743919,
+          "sbp_change_rmse": 16.85960657188929,
+          "sbp_change_correlation": 0.8459644619628234,
+          "dbp_change_mae": 6.894129236665916,
+          "dbp_change_rmse": 8.647663015286701,
+          "dbp_change_correlation": 0.8094769894422058
+        },
+        "ppg_pat_rr": {
+          "sbp_change_mae": 13.48253124792661,
+          "sbp_change_rmse": 16.735268926800536,
+          "sbp_change_correlation": 0.8493310688781776,
+          "dbp_change_mae": 7.49249288660227,
+          "dbp_change_rmse": 9.443440238544838,
+          "dbp_change_correlation": 0.7840766692907073
+        }
+      }
+    }
+  },
+  "pat_rr_minus_ppg_mae_95pct_sbp_dbp": [
+    [
+      -1.6962012329607012,
+      0.8013641884314467
+    ],
+    [
+      -0.6702288116679743,
+      0.7464755976864446
+    ]
+  ]
+}
