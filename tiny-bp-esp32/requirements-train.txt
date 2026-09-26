@@ -3,3 +3,5 @@ torch>=2.0
 onnx>=1.18
 onnxscript>=0.4
 tensorboard>=2.15
+scipy>=1.10
+pandas>=2.0

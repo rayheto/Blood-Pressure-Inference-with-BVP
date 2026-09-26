@@ -131,6 +131,10 @@ Tiny BP's ESP-PPQ INT8 simulation on these test windows had MAE **13.62 / 7.25 m
 
 Four new Tiny BP models were trained from scratch with the same split, preprocessing, seed, and 20-epoch budget to test sensitivity to the pulse rising edge. On the same 3,200 VitalDB test windows, the raw-waveform control had SBP/DBP MAE **13.64 / 7.54 mmHg**. Replacing each detected rise with a straight line gave **13.65 / 7.51**; replacing it with a standardized late ramp gave **13.83 / 7.36**. A similarly sized early-fall alteration gave **13.87 / 8.00**. The case-paired 95% intervals for both upstroke variants' MAE differences from the raw control include zero. This experiment therefore does not show that these upstroke details are necessary for the model's absolute BP accuracy. It cannot determine whether the model internally learned a particular hand-designed feature. See the [protocol, saved weights, and results](tiny-bp-esp32/ablation/README.md).
 
+### Matched ECG + PPG follow-up
+
+Synchronized lead-II ECG was recovered for **276,819 training / 2,422 validation / 2,955 test windows**. On the same 32-subject VitalDB test subset, a newly trained PPG-only control scored **13.49 / 7.43 mmHg** SBP/DBP MAE. Direct two-channel ECG + PPG fusion scored **13.94 / 7.52**; a frozen-PPG model with a trainable ECG correction scored **13.28 / 7.57**. Across three random seeds, the latter's SBP MAE reduction averaged **0.27 mmHg**, while DBP MAE increased by **0.13 mmHg**; the individual case-paired SBP intervals include zero. Explicit ECG-to-PPG timing features did not give a consistent absolute-error benefit. The [ECG + PPG protocol and full paired results](tiny-bp-esp32/ecg_ppg/README.md) include short-term BP-change comparisons and TensorBoard run names. This is an exploratory operating-room comparison, not wrist or clinical validation.
+
 ---
 
 ## Repository Structure

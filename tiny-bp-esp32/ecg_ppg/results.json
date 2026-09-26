@@ -1,0 +1,697 @@
+{
+  "seeds": {
+    "42": {
+      "training": {
+        "meta": {
+          "run_name": "ECG_PPG_matched_all_cases",
+          "train_windows": 276819,
+          "validation_windows": 2422,
+          "test_windows": 2955,
+          "train_subjects": 3028,
+          "validation_subjects": 26,
+          "test_subjects": 32,
+          "min_ppg_match_correlation": 0.960002064704895,
+          "epochs": 30,
+          "seed": 42,
+          "source": "VitalDB SNUADC/PLETH and synchronized SNUADC/ECG_II"
+        },
+        "models": {
+          "ppg_only": {
+            "best_epoch": 10,
+            "test": {
+              "sbp_mae": 13.489627838134766,
+              "dbp_mae": 7.4271039962768555,
+              "sbp_bias": -0.9902415871620178,
+              "dbp_bias": -0.4152544140815735,
+              "sbp_sd": 17.08492660522461,
+              "dbp_sd": 9.520978927612305
+            }
+          },
+          "ecg_ppg": {
+            "best_epoch": 25,
+            "test": {
+              "sbp_mae": 13.936163902282715,
+              "dbp_mae": 7.5184807777404785,
+              "sbp_bias": -0.25569260120391846,
+              "dbp_bias": 1.5609081983566284,
+              "sbp_sd": 17.332529067993164,
+              "dbp_sd": 9.538790702819824
+            }
+          },
+          "ecg_ppg_pat": {
+            "best_epoch": 11,
+            "test": {
+              "sbp_mae": 13.973193168640137,
+              "dbp_mae": 7.754387378692627,
+              "sbp_bias": -2.348210573196411,
+              "dbp_bias": -0.2625854015350342,
+              "sbp_sd": 17.413789749145508,
+              "dbp_sd": 9.848831176757812
+            }
+          },
+          "ecg_residual": {
+            "best_epoch": 8,
+            "test": {
+              "sbp_mae": 13.281496047973633,
+              "dbp_mae": 7.570525169372559,
+              "sbp_bias": -1.6039105653762817,
+              "dbp_bias": 0.556495189666748,
+              "sbp_sd": 16.66395378112793,
+              "dbp_sd": 9.55424690246582
+            }
+          },
+          "ecg_delay_residual": {
+            "best_epoch": 8,
+            "test": {
+              "sbp_mae": 13.506802558898926,
+              "dbp_mae": 7.553006172180176,
+              "sbp_bias": -1.7149388790130615,
+              "dbp_bias": -0.45365235209465027,
+              "sbp_sd": 16.903921127319336,
+              "dbp_sd": 9.51137924194336
+            }
+          }
+        }
+      },
+      "paired_test": {
+        "windows": 2955,
+        "cases": 32,
+        "minimum_ppg_match_correlation": 0.9602092504501343,
+        "modes": {
+          "ppg_only": {
+            "sbp_mae": 13.489627838134766,
+            "dbp_mae": 7.4271039962768555,
+            "sbp_error_sd": 17.08492660522461,
+            "dbp_error_sd": 9.520978927612305,
+            "within_case_60_300s": {
+              "pairs": 2600,
+              "sbp_change_mae": 6.646410942077637,
+              "dbp_change_mae": 4.005135536193848,
+              "sbp_change_correlation": 0.5093688157531044,
+              "dbp_change_correlation": 0.48511438047703387
+            }
+          },
+          "ecg_ppg": {
+            "sbp_mae": 13.936163902282715,
+            "dbp_mae": 7.5184807777404785,
+            "sbp_error_sd": 17.332529067993164,
+            "dbp_error_sd": 9.538790702819824,
+            "within_case_60_300s": {
+              "pairs": 2600,
+              "sbp_change_mae": 7.6679840087890625,
+              "dbp_change_mae": 4.549112796783447,
+              "sbp_change_correlation": 0.46203035170339496,
+              "dbp_change_correlation": 0.4475852576348015
+            },
+            "vs_ppg_only": {
+              "mean_case_sbp_mae_difference": 0.4629080295562744,
+              "mean_case_dbp_mae_difference": 0.10543996095657349,
+              "sbp_95pct": [
+                -0.2580549612641334,
+                1.2388609379529947
+              ],
+              "dbp_95pct": [
+                -0.5454672992229461,
+                0.7783510088920593
+              ]
+            },
+            "within_case_vs_ppg_only": {
+              "correlation_difference_95pct_sbp_dbp": [
+                [
+                  -0.08748172028698634,
+                  -0.007226839307706778
+                ],
+                [
+                  -0.08154819057991419,
+                  0.004689871814722109
+                ]
+              ],
+              "change_mae_difference_95pct_sbp_dbp": [
+                [
+                  0.697283935546875,
+                  1.3214159727096557
+                ],
+                [
+                  0.3824855864048004,
+                  0.7057995200157163
+                ]
+              ]
+            }
+          },
+          "ecg_ppg_pat": {
+            "sbp_mae": 13.973193168640137,
+            "dbp_mae": 7.754387378692627,
+            "sbp_error_sd": 17.413789749145508,
+            "dbp_error_sd": 9.848831176757812,
+            "within_case_60_300s": {
+              "pairs": 2600,
+              "sbp_change_mae": 7.2984795570373535,
+              "dbp_change_mae": 4.399492263793945,
+              "sbp_change_correlation": 0.47173413406881576,
+              "dbp_change_correlation": 0.43882546995185207
+            },
+            "vs_ppg_only": {
+              "mean_case_sbp_mae_difference": 0.5161924362182617,
+              "mean_case_dbp_mae_difference": 0.3093720078468323,
+              "sbp_95pct": [
+                -0.33976499289274215,
+                1.4067301839590065
+              ],
+              "dbp_95pct": [
+                -0.13895717859268186,
+                0.8210374206304545
+              ]
+            },
+            "within_case_vs_ppg_only": {
+              "correlation_difference_95pct_sbp_dbp": [
+                [
+                  -0.0735386612866078,
+                  -0.00314240638446961
+                ],
+                [
+                  -0.09088416882041926,
+                  0.0011942993060931623
+                ]
+              ],
+              "change_mae_difference_95pct_sbp_dbp": [
+                [
+                  0.4196862459182739,
+                  0.8910085320472715
+                ],
+                [
+                  0.21407819390296937,
+                  0.5733790993690491
+                ]
+              ]
+            }
+          },
+          "ecg_residual": {
+            "sbp_mae": 13.281496047973633,
+            "dbp_mae": 7.570525169372559,
+            "sbp_error_sd": 16.66395378112793,
+            "dbp_error_sd": 9.55424690246582,
+            "within_case_60_300s": {
+              "pairs": 2600,
+              "sbp_change_mae": 6.715692520141602,
+              "dbp_change_mae": 4.1253461837768555,
+              "sbp_change_correlation": 0.5297053085954656,
+              "dbp_change_correlation": 0.49040659652391205
+            },
+            "vs_ppg_only": {
+              "mean_case_sbp_mae_difference": -0.16922719776630402,
+              "mean_case_dbp_mae_difference": 0.11637842655181885,
+              "sbp_95pct": [
+                -0.9113366320729256,
+                0.5374988883733748
+              ],
+              "dbp_95pct": [
+                -0.3233320690691471,
+                0.5520295798778532
+              ]
+            },
+            "within_case_vs_ppg_only": {
+              "correlation_difference_95pct_sbp_dbp": [
+                [
+                  -0.005938007674469048,
+                  0.04695035417377684
+                ],
+                [
+                  -0.02755756675472311,
+                  0.0330559040190788
+                ]
+              ],
+              "change_mae_difference_95pct_sbp_dbp": [
+                [
+                  -0.07173875570297242,
+                  0.20029237270355224
+                ],
+                [
+                  0.019607406854629517,
+                  0.22055256962776182
+                ]
+              ]
+            }
+          },
+          "ecg_delay_residual": {
+            "sbp_mae": 13.506802558898926,
+            "dbp_mae": 7.553006172180176,
+            "sbp_error_sd": 16.903921127319336,
+            "dbp_error_sd": 9.51137924194336,
+            "within_case_60_300s": {
+              "pairs": 2600,
+              "sbp_change_mae": 6.658294200897217,
+              "dbp_change_mae": 4.12053918838501,
+              "sbp_change_correlation": 0.5357333989250068,
+              "dbp_change_correlation": 0.4950809369653194
+            },
+            "vs_ppg_only": {
+              "mean_case_sbp_mae_difference": 0.06652206182479858,
+              "mean_case_dbp_mae_difference": 0.08794339001178741,
+              "sbp_95pct": [
+                -0.7323631078004837,
+                0.8493725970387459
+              ],
+              "dbp_95pct": [
+                -0.32682402729988097,
+                0.5169714763760566
+              ]
+            },
+            "within_case_vs_ppg_only": {
+              "correlation_difference_95pct_sbp_dbp": [
+                [
+                  0.002167791742614958,
+                  0.05024452493398086
+                ],
+                [
+                  -0.013596616624468169,
+                  0.031188794390106446
+                ]
+              ],
+              "change_mae_difference_95pct_sbp_dbp": [
+                [
+                  -0.12289321422576904,
+                  0.1381587266921996
+                ],
+                [
+                  0.03251687884330749,
+                  0.19266009926795957
+                ]
+              ]
+            }
+          }
+        }
+      }
+    },
+    "43": {
+      "training": {
+        "meta": {
+          "run_name": "ECG_PPG_seed43_matched_all_cases",
+          "train_windows": 276819,
+          "validation_windows": 2422,
+          "test_windows": 2955,
+          "train_subjects": 3028,
+          "validation_subjects": 26,
+          "test_subjects": 32,
+          "min_ppg_match_correlation": 0.960002064704895,
+          "epochs": 30,
+          "seed": 43,
+          "source": "VitalDB SNUADC/PLETH and synchronized SNUADC/ECG_II"
+        },
+        "models": {
+          "ppg_only": {
+            "best_epoch": 19,
+            "test": {
+              "sbp_mae": 13.714254379272461,
+              "dbp_mae": 7.218139171600342,
+              "sbp_bias": -2.94602108001709,
+              "dbp_bias": -0.3958764970302582,
+              "sbp_sd": 17.15340232849121,
+              "dbp_sd": 9.340553283691406
+            }
+          },
+          "ecg_residual": {
+            "best_epoch": 5,
+            "test": {
+              "sbp_mae": 13.21756649017334,
+              "dbp_mae": 7.3759379386901855,
+              "sbp_bias": -0.10100986063480377,
+              "dbp_bias": 0.2628644108772278,
+              "sbp_sd": 16.727035522460938,
+              "dbp_sd": 9.411184310913086
+            }
+          },
+          "ecg_delay_residual": {
+            "best_epoch": 14,
+            "test": {
+              "sbp_mae": 13.266142845153809,
+              "dbp_mae": 7.457454204559326,
+              "sbp_bias": -1.0636259317398071,
+              "dbp_bias": 0.07381300628185272,
+              "sbp_sd": 16.738136291503906,
+              "dbp_sd": 9.427279472351074
+            }
+          }
+        }
+      },
+      "paired_test": {
+        "windows": 2955,
+        "cases": 32,
+        "minimum_ppg_match_correlation": 0.9602092504501343,
+        "modes": {
+          "ppg_only": {
+            "sbp_mae": 13.714254379272461,
+            "dbp_mae": 7.218139171600342,
+            "sbp_error_sd": 17.15340232849121,
+            "dbp_error_sd": 9.340553283691406,
+            "within_case_60_300s": {
+              "pairs": 2600,
+              "sbp_change_mae": 6.897873878479004,
+              "dbp_change_mae": 4.125067234039307,
+              "sbp_change_correlation": 0.4917773825940479,
+              "dbp_change_correlation": 0.4698668275290759
+            }
+          },
+          "ecg_residual": {
+            "sbp_mae": 13.21756649017334,
+            "dbp_mae": 7.3759379386901855,
+            "sbp_error_sd": 16.727035522460938,
+            "dbp_error_sd": 9.411184310913086,
+            "within_case_60_300s": {
+              "pairs": 2600,
+              "sbp_change_mae": 6.95786190032959,
+              "dbp_change_mae": 4.225884914398193,
+              "sbp_change_correlation": 0.5000094740243775,
+              "dbp_change_correlation": 0.4687579672515196
+            },
+            "vs_ppg_only": {
+              "mean_case_sbp_mae_difference": -0.45414403080940247,
+              "mean_case_dbp_mae_difference": 0.14419837296009064,
+              "sbp_95pct": [
+                -1.3540200173854828,
+                0.43143689557909964
+              ],
+              "dbp_95pct": [
+                -0.21419637836515903,
+                0.5171733304858199
+              ]
+            },
+            "within_case_vs_ppg_only": {
+              "correlation_difference_95pct_sbp_dbp": [
+                [
+                  -0.016563535852938082,
+                  0.030416137820448292
+                ],
+                [
+                  -0.018068669730553634,
+                  0.01425876805849144
+                ]
+              ],
+              "change_mae_difference_95pct_sbp_dbp": [
+                [
+                  -0.06746163368225097,
+                  0.1870180964469909
+                ],
+                [
+                  0.03304436206817627,
+                  0.1634267807006836
+                ]
+              ]
+            }
+          },
+          "ecg_delay_residual": {
+            "sbp_mae": 13.266142845153809,
+            "dbp_mae": 7.457454204559326,
+            "sbp_error_sd": 16.738136291503906,
+            "dbp_error_sd": 9.427279472351074,
+            "within_case_60_300s": {
+              "pairs": 2600,
+              "sbp_change_mae": 7.080316066741943,
+              "dbp_change_mae": 4.314802646636963,
+              "sbp_change_correlation": 0.5143211677864064,
+              "dbp_change_correlation": 0.47727136502759393
+            },
+            "vs_ppg_only": {
+              "mean_case_sbp_mae_difference": -0.39419904351234436,
+              "mean_case_dbp_mae_difference": 0.22461619973182678,
+              "sbp_95pct": [
+                -1.2178507655858994,
+                0.4503135658800592
+              ],
+              "dbp_95pct": [
+                -0.09668557569384574,
+                0.5853205949068064
+              ]
+            },
+            "within_case_vs_ppg_only": {
+              "correlation_difference_95pct_sbp_dbp": [
+                [
+                  -0.00023245546274637245,
+                  0.04426388259479247
+                ],
+                [
+                  -0.014757749501633223,
+                  0.028598052331985355
+                ]
+              ],
+              "change_mae_difference_95pct_sbp_dbp": [
+                [
+                  0.030373871326446533,
+                  0.3330315351486206
+                ],
+                [
+                  0.08400936126708984,
+                  0.2890527486801147
+                ]
+              ]
+            }
+          }
+        }
+      }
+    },
+    "44": {
+      "training": {
+        "meta": {
+          "run_name": "ECG_PPG_seed44_matched_all_cases",
+          "train_windows": 276819,
+          "validation_windows": 2422,
+          "test_windows": 2955,
+          "train_subjects": 3028,
+          "validation_subjects": 26,
+          "test_subjects": 32,
+          "min_ppg_match_correlation": 0.960002064704895,
+          "epochs": 30,
+          "seed": 44,
+          "source": "VitalDB SNUADC/PLETH and synchronized SNUADC/ECG_II"
+        },
+        "models": {
+          "ppg_only": {
+            "best_epoch": 16,
+            "test": {
+              "sbp_mae": 13.593168258666992,
+              "dbp_mae": 7.3590006828308105,
+              "sbp_bias": -1.964139699935913,
+              "dbp_bias": -0.18150244653224945,
+              "sbp_sd": 17.17278289794922,
+              "dbp_sd": 9.512773513793945
+            }
+          },
+          "ecg_residual": {
+            "best_epoch": 2,
+            "test": {
+              "sbp_mae": 13.486922264099121,
+              "dbp_mae": 7.4340033531188965,
+              "sbp_bias": -0.03555505350232124,
+              "dbp_bias": 0.4165309965610504,
+              "sbp_sd": 17.048812866210938,
+              "dbp_sd": 9.483626365661621
+            }
+          },
+          "ecg_delay_residual": {
+            "best_epoch": 14,
+            "test": {
+              "sbp_mae": 13.460697174072266,
+              "dbp_mae": 7.784547328948975,
+              "sbp_bias": 0.7821231484413147,
+              "dbp_bias": 0.7146826386451721,
+              "sbp_sd": 17.1982364654541,
+              "dbp_sd": 9.843835830688477
+            }
+          }
+        }
+      },
+      "paired_test": {
+        "windows": 2955,
+        "cases": 32,
+        "minimum_ppg_match_correlation": 0.9602092504501343,
+        "modes": {
+          "ppg_only": {
+            "sbp_mae": 13.593168258666992,
+            "dbp_mae": 7.3590006828308105,
+            "sbp_error_sd": 17.17278289794922,
+            "dbp_error_sd": 9.512773513793945,
+            "within_case_60_300s": {
+              "pairs": 2600,
+              "sbp_change_mae": 6.9189934730529785,
+              "dbp_change_mae": 4.1573076248168945,
+              "sbp_change_correlation": 0.48059315654153284,
+              "dbp_change_correlation": 0.4655906697956941
+            }
+          },
+          "ecg_residual": {
+            "sbp_mae": 13.486922264099121,
+            "dbp_mae": 7.4340033531188965,
+            "sbp_error_sd": 17.048812866210938,
+            "dbp_error_sd": 9.483626365661621,
+            "within_case_60_300s": {
+              "pairs": 2600,
+              "sbp_change_mae": 6.9201178550720215,
+              "dbp_change_mae": 4.182394981384277,
+              "sbp_change_correlation": 0.4944249486345386,
+              "dbp_change_correlation": 0.4756404489163678
+            },
+            "vs_ppg_only": {
+              "mean_case_sbp_mae_difference": -0.07891878485679626,
+              "mean_case_dbp_mae_difference": 0.0769142359495163,
+              "sbp_95pct": [
+                -0.6709569022059441,
+                0.5675448387861246
+              ],
+              "dbp_95pct": [
+                -0.25953219532966615,
+                0.4319982513785362
+              ]
+            },
+            "within_case_vs_ppg_only": {
+              "correlation_difference_95pct_sbp_dbp": [
+                [
+                  -0.0025960418230405458,
+                  0.028778248453144823
+                ],
+                [
+                  -0.006166608263350089,
+                  0.023475696824250068
+                ]
+              ],
+              "change_mae_difference_95pct_sbp_dbp": [
+                [
+                  -0.09056316614151001,
+                  0.08965595960617065
+                ],
+                [
+                  -0.031678628921508786,
+                  0.0809689044952392
+                ]
+              ]
+            }
+          },
+          "ecg_delay_residual": {
+            "sbp_mae": 13.460697174072266,
+            "dbp_mae": 7.784547328948975,
+            "sbp_error_sd": 17.1982364654541,
+            "dbp_error_sd": 9.843835830688477,
+            "within_case_60_300s": {
+              "pairs": 2600,
+              "sbp_change_mae": 7.190311908721924,
+              "dbp_change_mae": 4.364933013916016,
+              "sbp_change_correlation": 0.4962740884895486,
+              "dbp_change_correlation": 0.4679012582393095
+            },
+            "vs_ppg_only": {
+              "mean_case_sbp_mae_difference": -0.08823385834693909,
+              "mean_case_dbp_mae_difference": 0.40424102544784546,
+              "sbp_95pct": [
+                -1.094134122133255,
+                1.051594617962836
+              ],
+              "dbp_95pct": [
+                -0.08913468606770038,
+                0.9629401892423616
+              ]
+            },
+            "within_case_vs_ppg_only": {
+              "correlation_difference_95pct_sbp_dbp": [
+                [
+                  -0.011412219730928538,
+                  0.04509143059884357
+                ],
+                [
+                  -0.027626260439183252,
+                  0.029171334744763314
+                ]
+              ],
+              "change_mae_difference_95pct_sbp_dbp": [
+                [
+                  0.09034059047698975,
+                  0.4463260650634765
+                ],
+                [
+                  0.09083927273750306,
+                  0.32477097511291503
+                ]
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "aggregate": {
+    "ecg_residual": {
+      "mae_difference_by_seed_sbp_dbp": [
+        [
+          -0.2081317901611328,
+          0.14342117309570312
+        ],
+        [
+          -0.4966878890991211,
+          0.15779876708984375
+        ],
+        [
+          -0.1062459945678711,
+          0.07500267028808594
+        ]
+      ],
+      "mean_mae_difference_sbp_dbp": [
+        -0.270355224609375,
+        0.12540753682454428
+      ],
+      "change_correlation_difference_by_seed_sbp_dbp": [
+        [
+          0.020336492842361165,
+          0.005292216046878184
+        ],
+        [
+          0.008232091430329547,
+          -0.0011088602775563006
+        ],
+        [
+          0.01383179209300578,
+          0.01004977912067373
+        ]
+      ],
+      "mean_change_correlation_difference_sbp_dbp": [
+        0.014133458788565497,
+        0.004744378296665204
+      ]
+    },
+    "ecg_delay_residual": {
+      "mae_difference_by_seed_sbp_dbp": [
+        [
+          0.017174720764160156,
+          0.1259021759033203
+        ],
+        [
+          -0.44811153411865234,
+          0.23931503295898438
+        ],
+        [
+          -0.13247108459472656,
+          0.42554664611816406
+        ]
+      ],
+      "mean_mae_difference_sbp_dbp": [
+        -0.1878026326497396,
+        0.26358795166015625
+      ],
+      "change_correlation_difference_by_seed_sbp_dbp": [
+        [
+          0.026364583171902378,
+          0.009966556488285538
+        ],
+        [
+          0.022543785192358445,
+          0.007404537498518049
+        ],
+        [
+          0.015680931948015786,
+          0.0023105884436154245
+        ]
+      ],
+      "mean_change_correlation_difference_sbp_dbp": [
+        0.02152976677075887,
+        0.006560560810139671
+      ]
+    }
+  },
+  "interpretation": "Exploratory repeated runs on the same inspected held-out subjects; seed variation is not independent external validation."
+}
