@@ -32,6 +32,8 @@ def main():
     p.add_argument("--preprocess", type=Path, required=True)
     p.add_argument("--run", type=Path, required=True)
     p.add_argument("--trace", type=Path, help="Write per-window reference and predictions for plotting")
+    p.add_argument("--heads", type=Path, help="Directory containing trained correction heads")
+    p.add_argument("--report", type=Path, help="Override report JSON path")
     args = p.parse_args()
     tracks = get_track_map(args.tracks)
     names = ("SNUADC/PLETH", "SNUADC/ECG_II", "SNUADC/ART")
@@ -42,6 +44,11 @@ def main():
     length = min(len(ppg), len(ecg), len(art))
     models = {name: StreamingBloodPressure(args.run / f"{name}.pt", args.preprocess, mode=name)
               for name in ("ppg_only", "ppg_pat_rr")}
+    if args.heads:
+        for name in ("uniform", "high_pressure_weighted"):
+            models[name] = StreamingBloodPressure(args.run / "ppg_pat_rr.pt", args.preprocess,
+                                                  mode="ppg_pat_rr",
+                                                  correction_checkpoint=args.heads / f"{name}.pt")
     truth, preds, ages = [], {name: [] for name in models}, []
     first_time, first_bp = None, None
     for start in range(0, length - 1249, 1250):
@@ -77,7 +84,7 @@ def main():
               "elapsed_last_s": ages[-1], "reference": "ART used to emulate cuff for research",
               "zero_change": score(np.zeros_like(truth), truth),
               "models": {name: score(np.asarray(values), truth) for name, values in preds.items()}}
-    output = args.run / f"raw_stream_case_{args.caseid}.json"
+    output = args.report or args.run / f"raw_stream_case_{args.caseid}.json"
     output.write_text(json.dumps(report, indent=2))
     if args.trace:
         trace = {
@@ -86,8 +93,8 @@ def main():
             "calibration_bp_mmhg": first_bp.tolist(),
             "elapsed_s": ages,
             "reference_bp_mmhg": (truth + first_bp).tolist(),
-            "ppg_only_bp_mmhg": (np.asarray(preds["ppg_only"]) + first_bp).tolist(),
-            "ppg_pat_rr_bp_mmhg": (np.asarray(preds["ppg_pat_rr"]) + first_bp).tolist(),
+            **{name + "_bp_mmhg": (np.asarray(values) + first_bp).tolist()
+               for name, values in preds.items()},
         }
         args.trace.parent.mkdir(parents=True, exist_ok=True)
         args.trace.write_text(json.dumps(trace, separators=(",", ":")))

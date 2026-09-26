@@ -11,6 +11,7 @@ from scipy.signal import butter
 from train_delta import DeltaBP
 from train_fusion import signal_features
 from train_pat_delta import pair_features
+from train_dynamic_head import DynamicHead, inputs as dynamic_inputs
 
 
 WINDOW_SAMPLES = 1250
@@ -25,7 +26,8 @@ class StreamingBloodPressure:
     No arterial-pressure label or later cuff value is used by `observe_window`.
     """
 
-    def __init__(self, checkpoint: Path, preprocess: Path, device="cpu", mode="ppg_pat_rr"):
+    def __init__(self, checkpoint: Path, preprocess: Path, device="cpu", mode="ppg_pat_rr",
+                 correction_checkpoint=None):
         if mode not in ("ppg_only", "ppg_pat_rr"):
             raise ValueError("mode must be ppg_only or ppg_pat_rr")
         self.mode = mode
@@ -37,6 +39,12 @@ class StreamingBloodPressure:
             raise ValueError("Invalid PPG normalization")
         self.model = DeltaBP(1, 4 if mode == "ppg_pat_rr" else 0).to(self.device).eval()
         self.model.load_state_dict(torch.load(checkpoint, map_location=self.device, weights_only=True))
+        self.correction = None
+        if correction_checkpoint is not None:
+            if mode != "ppg_pat_rr":
+                raise ValueError("Dynamic correction requires ppg_pat_rr mode")
+            self.correction = DynamicHead().to(self.device).eval()
+            self.correction.load_state_dict(torch.load(correction_checkpoint, map_location=self.device, weights_only=True))
         self.ecg_filter = butter(2, (5, 20), btype="bandpass", fs=SAMPLE_RATE_HZ, output="sos")
         self.calibration = None
         self.ppg_buffer = deque()
@@ -87,12 +95,18 @@ class StreamingBloodPressure:
                                torch.from_numpy(x1).to(self.device),
                                torch.tensor([[age / MAX_CALIBRATION_AGE_S]], dtype=torch.float32, device=self.device),
                                extra_tensor).cpu().numpy()[0]
+            base_delta = delta.copy()
+            if self.correction is not None:
+                state = dynamic_inputs(delta[None], cuff[None], np.array([age], np.float32))
+                delta += self.correction(torch.from_numpy(state).to(self.device)).cpu().numpy()[0]
         estimate = cuff + delta
         return {"status": "estimate", "window_end_s": float(window_end_s),
                 "elapsed_s": age, "sbp_mmhg": float(estimate[0]),
                 "dbp_mmhg": float(estimate[1]),
                 "delta_sbp_mmhg": float(delta[0]),
                 "delta_dbp_mmhg": float(delta[1]),
+                "base_delta_sbp_mmhg": float(base_delta[0]),
+                "base_delta_dbp_mmhg": float(base_delta[1]),
                 "pat_detected_in_both_windows": bool(pat_valid[0])}
 
     def push_samples(self, ppg_samples, ecg_samples, last_sample_time_s):

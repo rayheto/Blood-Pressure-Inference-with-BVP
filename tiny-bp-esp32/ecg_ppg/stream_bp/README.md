@@ -1,5 +1,7 @@
 # Streaming blood pressure change experiment
 
+The [supervised dynamic correction experiment](dynamic_head/README.md) adds two bounded correction heads, reports held-out and continuous-case metrics, and includes an updated animated SVG comparison.
+
 This research prototype accepts synchronized 125 Hz PPG and ECG in completed 10-second windows. One externally measured cuff SBP/DBP value initializes a session. Each later window produces an estimate of change from that calibration, plus the calibrated BP. It requires recalibration after 30 minutes. `stream_inference.py` also accepts smaller ordered chunks through `push_samples` and buffers them until a complete window arrives. The current implementation uses PyTorch on a computer; it has **not** been converted to or tested on ESP32-S3.
 
 ## Data and training

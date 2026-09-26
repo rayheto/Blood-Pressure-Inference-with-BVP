@@ -1,0 +1,50 @@
+{
+  "caseid": "236",
+  "source": "original continuous VitalDB 500-Hz tracks downsampled to 125 Hz",
+  "calibration_time_s": 640.0,
+  "evaluated_10s_windows": 175,
+  "elapsed_last_s": 1800.0,
+  "reference": "ART used to emulate cuff for research",
+  "zero_change": {
+    "sbp_change_mae": 17.946353912353516,
+    "sbp_change_rmse": 28.87651252746582,
+    "sbp_change_correlation": 0.0,
+    "dbp_change_mae": 9.118459701538086,
+    "dbp_change_rmse": 14.26280403137207,
+    "dbp_change_correlation": 0.0
+  },
+  "models": {
+    "ppg_only": {
+      "sbp_change_mae": 29.293718206882478,
+      "sbp_change_rmse": 32.6703574202453,
+      "sbp_change_correlation": 0.8915223501766935,
+      "dbp_change_mae": 15.047897565130677,
+      "dbp_change_rmse": 16.78579407469574,
+      "dbp_change_correlation": 0.8680092101055011
+    },
+    "ppg_pat_rr": {
+      "sbp_change_mae": 26.51481616088322,
+      "sbp_change_rmse": 29.861106735166437,
+      "sbp_change_correlation": 0.9058418398923443,
+      "dbp_change_mae": 13.65796771969114,
+      "dbp_change_rmse": 15.560590243226331,
+      "dbp_change_correlation": 0.8791235658379081
+    },
+    "uniform": {
+      "sbp_change_mae": 14.969400621141705,
+      "sbp_change_rmse": 21.390554254023037,
+      "sbp_change_correlation": 0.9080681293800662,
+      "dbp_change_mae": 9.710075665882655,
+      "dbp_change_rmse": 12.716521283707214,
+      "dbp_change_correlation": 0.8828442581390467
+    },
+    "high_pressure_weighted": {
+      "sbp_change_mae": 15.266749079568045,
+      "sbp_change_rmse": 20.887849842655772,
+      "sbp_change_correlation": 0.9178120046037178,
+      "dbp_change_mae": 9.593390254633768,
+      "dbp_change_rmse": 12.299624303433246,
+      "dbp_change_correlation": 0.9006869969275296
+    }
+  }
+}
