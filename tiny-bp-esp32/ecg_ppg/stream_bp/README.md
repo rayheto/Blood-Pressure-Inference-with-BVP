@@ -24,6 +24,8 @@ A separate engineering replay used one original, continuous 500 Hz VitalDB recor
 
 [Animated case-236 fit](case_236_stream_fit.svg) shows the reference and both model outputs over the 30-minute replay. The underlying 175 timestamped values are in `case_236_trace.json`; `create_animation.py` regenerates the SVG. The animation reveals that predictions follow the direction of the rise but substantially understate its magnitude.
 
+The [smoothed animation](case_236_stream_fit_smoothed.svg) applies the same trailing 60-second average to all three traces for viewing. This does not change the model or the original MAE reported above. Regenerate it with `python create_animation.py --smooth-seconds 60`.
+
 The arterial-pressure waveform supplied evaluation labels and the simulated calibration reading only; it is not an inference input after calibration. No result here supports clinical use or an AAMI claim.
 
 ## Files and reproduction

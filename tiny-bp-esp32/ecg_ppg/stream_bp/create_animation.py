@@ -1,12 +1,18 @@
 """Render case_236_trace.json as a self-contained animated SVG."""
 
+import argparse
 import json
 from pathlib import Path
 
 
 HERE = Path(__file__).resolve().parent
 TRACE = json.loads((HERE / "case_236_trace.json").read_text())
-OUT = HERE / "case_236_stream_fit.svg"
+parser = argparse.ArgumentParser()
+parser.add_argument("--smooth-seconds", type=int, default=0)
+args = parser.parse_args()
+if args.smooth_seconds < 0:
+    parser.error("--smooth-seconds must be nonnegative")
+OUT = HERE / ("case_236_stream_fit_smoothed.svg" if args.smooth_seconds else "case_236_stream_fit.svg")
 
 W, H = 1200, 790
 LEFT, RIGHT = 92, 1144
@@ -27,6 +33,17 @@ def path(points):
     return " ".join(("M" if i == 0 else "L") + f"{x:.1f},{y:.1f}" for i, (x, y) in enumerate(points))
 
 
+def display_values(key):
+    values = TRACE[key]
+    if not args.smooth_seconds:
+        return values
+    elapsed = TRACE["elapsed_s"]
+    return [[sum(values[j][axis] for j in range(len(values)) if 0 <= t - elapsed[j] < args.smooth_seconds) /
+             sum(1 for past in elapsed if 0 <= t - past < args.smooth_seconds)
+             for axis in (0, 1)] for t in elapsed]
+
+
+subtitle = (f"{args.smooth_seconds} 秒后向滑动平均 · " if args.smooth_seconds else "")
 svg = [f'''<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="Animated blood pressure comparison for VitalDB case 236">
 <title>Streaming blood pressure fit, VitalDB case 236</title>
 <desc>Two charts compare invasive arterial pressure with PPG-only and PPG plus ECG timing estimates over 30 minutes after calibration. Models track direction but underestimate the rise. Values are 10-second window summaries, not beat-by-beat pressure.</desc>
@@ -37,9 +54,9 @@ text {{ font-family: Arial, 'Microsoft YaHei', sans-serif; fill: #eaf3ff; }}
 </style>
 <rect width="1200" height="790" fill="#0c1726"/>
 <text x="56" y="53" font-size="27" font-weight="700">连续血压估计：一例真实波形回放</text>
-<text x="56" y="82" class="muted" font-size="15">VitalDB 病例 236 · 校准后 30 分钟 · 175 个有效 10 秒窗口 · 单位 mmHg</text>
+<text x="56" y="82" class="muted" font-size="15">VitalDB 病例 236 · {subtitle}校准后 30 分钟 · 175 个有效窗口 · mmHg</text>
 <rect x="800" y="25" width="344" height="70" rx="10" fill="#172a3d"/>
-<text x="819" y="50" font-size="14">融合模型 MAE</text>
+<text x="819" y="50" font-size="14">融合模型原始 MAE（未平滑）</text>
 <text x="819" y="78" font-size="21" font-weight="700" fill="#4fe0c5">SBP 26.51  /  DBP 13.66</text>
 <defs><clipPath id="reveal"><rect x="{LEFT}" y="112" width="0" height="612"><animate attributeName="width" from="0" to="{RIGHT-LEFT}" dur="20s" repeatCount="indefinite"/></rect></clipPath></defs>
 ''']
@@ -59,7 +76,7 @@ for title, top, bottom, low, high, channel in PANELS:
     y = ycoord(baseline, top, bottom, low, high)
     svg.append(f'<line x1="{LEFT}" x2="{RIGHT}" y1="{y:.1f}" y2="{y:.1f}" stroke="#bd8bf4" stroke-width="1.5" stroke-dasharray="7 6" opacity=".75"/>')
     for key in COLORS:
-        points = [(xcoord(t), ycoord(bp[channel], top, bottom, low, high)) for t, bp in zip(TRACE["elapsed_s"], TRACE[key])]
+        points = [(xcoord(t), ycoord(bp[channel], top, bottom, low, high)) for t, bp in zip(TRACE["elapsed_s"], display_values(key))]
         d = path([(LEFT, ycoord(baseline, top, bottom, low, high))] + points)
         color = COLORS[key]
         width = 3.5 if key == "reference_bp_mmhg" else 2.6
