@@ -22,6 +22,8 @@ MAE is in mmHg; lower is better. Case-bootstrap 95% intervals for fusion minus P
 
 A separate engineering replay used one original, continuous 500 Hz VitalDB recording (case 236), downsampled to 125 Hz. It yielded 175 valid 10-second windows after a simulated calibration. Fusion MAE was **26.51 SBP / 13.66 DBP**; PPG-only was **29.29 / 15.05**, while keeping calibration unchanged was **17.95 / 9.12**. The model therefore performed worse than the simple no-change reference on this case. This one-case result is a warning about real-stream behavior, not a population estimate. See `raw_stream_case_236.json`.
 
+[Animated case-236 fit](case_236_stream_fit.svg) shows the reference and both model outputs over the 30-minute replay. The underlying 175 timestamped values are in `case_236_trace.json`; `create_animation.py` regenerates the SVG. The animation reveals that predictions follow the direction of the rise but substantially understate its magnitude.
+
 The arterial-pressure waveform supplied evaluation labels and the simulated calibration reading only; it is not an inference input after calibration. No result here supports clinical use or an AAMI claim.
 
 ## Files and reproduction

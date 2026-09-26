@@ -31,6 +31,7 @@ def main():
     p.add_argument("--tracks", type=Path, required=True)
     p.add_argument("--preprocess", type=Path, required=True)
     p.add_argument("--run", type=Path, required=True)
+    p.add_argument("--trace", type=Path, help="Write per-window reference and predictions for plotting")
     args = p.parse_args()
     tracks = get_track_map(args.tracks)
     names = ("SNUADC/PLETH", "SNUADC/ECG_II", "SNUADC/ART")
@@ -78,6 +79,18 @@ def main():
               "models": {name: score(np.asarray(values), truth) for name, values in preds.items()}}
     output = args.run / f"raw_stream_case_{args.caseid}.json"
     output.write_text(json.dumps(report, indent=2))
+    if args.trace:
+        trace = {
+            "caseid": args.caseid,
+            "calibration_time_s": first_time,
+            "calibration_bp_mmhg": first_bp.tolist(),
+            "elapsed_s": ages,
+            "reference_bp_mmhg": (truth + first_bp).tolist(),
+            "ppg_only_bp_mmhg": (np.asarray(preds["ppg_only"]) + first_bp).tolist(),
+            "ppg_pat_rr_bp_mmhg": (np.asarray(preds["ppg_pat_rr"]) + first_bp).tolist(),
+        }
+        args.trace.parent.mkdir(parents=True, exist_ok=True)
+        args.trace.write_text(json.dumps(trace, separators=(",", ":")))
     print(json.dumps(report, indent=2))
 
 
