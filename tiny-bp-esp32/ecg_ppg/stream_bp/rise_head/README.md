@@ -30,6 +30,8 @@ For this case's 15 windows at reference SBP 160–180 mmHg, SBP MAE was **55.89*
 
 The [animated SVG](case_236_rise_fit.svg) shows **four curves only**: arterial-pressure reference, frozen base, prior uniform head, and rise head. All are displayed with the same trailing 60-second average; the numeric results above use unsmoothed values. `case_236_trace.json` contains every plotted estimate. The animation can be regenerated with `python create_animation.py`.
 
+The animation is also available as a [20-second MP4 video](case_236_rise_fit.mp4) at 1200×790 and 24 fps.
+
 ## Artifacts
 
 - `rise_head.pt`: PyTorch research checkpoint.

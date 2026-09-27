@@ -29,6 +29,8 @@ Within this case's 15 windows at reference SBP 160–180 mmHg, PPG-only versus f
 
 The [animated SVG](case_236_ppg_vs_fusion.svg) uses **four curves**: arterial-pressure reference, original PPG base, PPG-only rise head, and PPG + ECG rise head. All use the same trailing 60-second display average. `case_236_trace.json` contains each unsmoothed prediction and `create_animation.py` regenerates the SVG.
 
+The animation is also available as a [20-second MP4 video](case_236_ppg_vs_fusion.mp4) at 1200×790 and 24 fps.
+
 ## Artifacts
 
 - `rise_head.pt`: PPG-only PyTorch correction checkpoint. Pair with `../ppg_only.pt`.
