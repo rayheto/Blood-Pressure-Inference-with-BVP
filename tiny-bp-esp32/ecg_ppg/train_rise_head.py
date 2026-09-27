@@ -16,9 +16,9 @@ from train_stream_bp import first_calibration_pairs
 
 
 class RiseHead(nn.Module):
-    def __init__(self):
+    def __init__(self, extra_features=4):
         super().__init__()
-        self.net = nn.Sequential(nn.Linear(73, 32), nn.ReLU(), nn.Linear(32, 16),
+        self.net = nn.Sequential(nn.Linear(69 + extra_features, 32), nn.ReLU(), nn.Linear(32, 16),
                                  nn.ReLU(), nn.Linear(16, 2))
         nn.init.zeros_(self.net[-1].weight)
         nn.init.zeros_(self.net[-1].bias)
@@ -32,11 +32,12 @@ def state_from_tensors(encoder, before, after, base, cuff, elapsed, extra):
     with torch.no_grad():
         ea = encoder(before)
         eb = encoder(after)
-    return torch.cat((eb - ea, eb, base / base.new_tensor([30., 15.]),
-                      cuff / cuff.new_tensor([120., 80.]), elapsed / 1800, extra), dim=1)
+    pieces = (eb - ea, eb, base / base.new_tensor([30., 15.]),
+              cuff / cuff.new_tensor([120., 80.]), elapsed / 1800)
+    return torch.cat((*pieces, extra) if extra is not None else pieces, dim=1)
 
 
-def make_states(cache, model, x, features, y, times, pairs, device):
+def make_states(cache, model, x, features, y, times, pairs, device, use_ecg=True):
     if cache.exists():
         with np.load(cache) as z:
             return z["state"], z["base"], z["truth"], z["case"]
@@ -48,7 +49,7 @@ def make_states(cache, model, x, features, y, times, pairs, device):
         after = torch.from_numpy(x[b]).to(device)
         elapsed = torch.from_numpy((times[b] - times[a]).astype(np.float32)[:, None]).to(device)
         cuff = torch.from_numpy(y[a].astype(np.float32)).to(device)
-        extra = torch.from_numpy(pair_features(features, rows, True)[0]).to(device)
+        extra = torch.from_numpy(pair_features(features, rows, True)[0]).to(device) if use_ecg else None
         with torch.no_grad():
             base = model(before, after, elapsed / 1800, extra)
             state = state_from_tensors(model.encoder, before, after, base, cuff, elapsed, extra)
@@ -78,6 +79,7 @@ def main():
         parser.add_argument("--" + name, type=Path, required=True)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--epochs", type=int, default=100)
+    parser.add_argument("--mode", choices=("ppg_pat_rr", "ppg_only"), default="ppg_pat_rr")
     args = parser.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
     torch.manual_seed(args.seed)
@@ -96,13 +98,14 @@ def main():
     }
     x = ((ppg - prep["mean"]) / prep["std"]).astype(np.float32)[:, None, :]
     xt = ((ppg_t - prep["mean"]) / prep["std"]).astype(np.float32)[:, None, :]
-    base_model = DeltaBP(1, 4).to(device).eval()
+    use_ecg = args.mode == "ppg_pat_rr"
+    base_model = DeltaBP(1, 4 if use_ecg else 0).to(device).eval()
     base_model.load_state_dict(torch.load(args.base, map_location=device, weights_only=True))
     data = {}
     for name in ("train", "val", "test"):
         signal, f, labels, stamps = ((xt, timing_t, yt, times_t) if name == "test" else (x, timing, y, times))
         data[name] = make_states(args.out / f"{name}_state_cache.npz", base_model, signal, f,
-                                 labels, stamps, pairs[name], device)
+                                 labels, stamps, pairs[name], device, use_ecg)
         print(name, len(pairs[name]), json.dumps(measure(data[name][1], data[name][2])), flush=True)
     state, base, truth, case = data["train"]
     state_val, base_val, truth_val, _ = data["val"]
@@ -114,13 +117,13 @@ def main():
     weights = np.minimum(weights, np.median(weights) * 10)
     weights /= weights.sum()
     rng = np.random.default_rng(args.seed)
-    head = RiseHead().to(device)
+    head = RiseHead(4 if use_ecg else 0).to(device)
     optimizer = torch.optim.AdamW(head.parameters(), lr=.001, weight_decay=.005)
     states = torch.from_numpy(state).to(device)
     bases = torch.from_numpy(base).to(device)
     labels = torch.from_numpy(truth).to(device)
     val_states = torch.from_numpy(state_val).to(device)
-    writer = SummaryWriter(str(args.tensorboard / "VitalDB_stream_rise_head"), flush_secs=5)
+    writer = SummaryWriter(str(args.tensorboard / ("VitalDB_stream_rise_head_ppg_only" if not use_ecg else "VitalDB_stream_rise_head")), flush_secs=5)
     best, best_epoch, stale = float("inf"), 0, 0
     for epoch in range(1, args.epochs + 1):
         head.train()
@@ -161,7 +164,7 @@ def main():
         vp = base_val + head(val_states).cpu().numpy()
         tp = base_test + head(torch.from_numpy(state_test).to(device)).cpu().numpy()
     np.save(args.out / "rise_head_test_predictions.npy", tp)
-    report = {"seed": args.seed, "best_epoch": best_epoch, "train_pairs": len(state),
+    report = {"seed": args.seed, "mode": args.mode, "best_epoch": best_epoch, "train_pairs": len(state),
               "validation_pairs": len(state_val), "test_pairs": len(state_test),
               "train_rise_bins_lt_minus20_minus20to20_20to40_ge40": bin_counts.tolist(),
               "selection": "validation SBP MAE + DBP MAE + 0.35 * rise>=40 SBP MAE",

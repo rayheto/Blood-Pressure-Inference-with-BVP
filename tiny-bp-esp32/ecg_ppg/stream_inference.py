@@ -50,9 +50,7 @@ class StreamingBloodPressure:
             self.correction = DynamicHead().to(self.device).eval()
             self.correction.load_state_dict(torch.load(correction_checkpoint, map_location=self.device, weights_only=True))
         if rise_checkpoint is not None:
-            if mode != "ppg_pat_rr":
-                raise ValueError("Rise correction requires ppg_pat_rr mode")
-            self.rise = RiseHead().to(self.device).eval()
+            self.rise = RiseHead(4 if mode == "ppg_pat_rr" else 0).to(self.device).eval()
             self.rise.load_state_dict(torch.load(rise_checkpoint, map_location=self.device, weights_only=True))
         self.ecg_filter = butter(2, (5, 20), btype="bandpass", fs=SAMPLE_RATE_HZ, output="sos")
         self.calibration = None
