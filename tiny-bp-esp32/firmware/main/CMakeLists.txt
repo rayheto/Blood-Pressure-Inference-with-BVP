@@ -7,6 +7,9 @@ elseif ("___idf_esp-dl" IN_LIST component_targets)
 else()
     message(FATAL_ERROR "ESP-DL component not found")
 endif()
-include(${espdl_dir}/fbs_loader/cmake/utilities.cmake)
+# esp-dl >= 3.3 relies on cmake_dir being set by the includer to locate
+# data_file_embed_asm_aligned.cmake next to utilities.cmake.
+set(cmake_dir "${espdl_dir}/fbs_loader/cmake")
+include(${cmake_dir}/utilities.cmake)
 idf_component_register(SRCS "app_main.cpp" REQUIRES ${requires})
 target_add_aligned_binary_data(${COMPONENT_LIB} "models/s3/model.espdl" BINARY)

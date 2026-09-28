@@ -1,0 +1,5 @@
+# Keep the 8 MB flash on XIAO ESP32-S3 usable and give the esp-dl-linked
+# image room beyond the 1 MB default factory partition.
+CONFIG_ESPTOOLPY_FLASHSIZE_8MB=y
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"

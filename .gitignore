@@ -46,6 +46,11 @@ data/signals/
 # Checkpoints (large model binaries, cluster-only)
 checkpoints/
 
+# ESP-IDF firmware build state (regenerated from idf_component.yml)
+tiny-bp-esp32/firmware/managed_components/
+tiny-bp-esp32/firmware/dependencies.lock
+tiny-bp-esp32/firmware/sdkconfig
+
 # Tracking document (untracked -- human-machine contract)
 PLAN.md
 
