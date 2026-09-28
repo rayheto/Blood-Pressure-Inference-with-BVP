@@ -10,7 +10,7 @@ Two-track experiment: handcrafted features + traditional ML vs. learned features
 
 [`tiny-bp-esp32/`](tiny-bp-esp32/README.md) contains a small PPG-only 1D CNN, its training and export scripts, an ESP32-S3 INT8 model, and ESP-IDF firmware. This experiment uses VitalDB operating-room PPG and invasive arterial-pressure labels; it is separate from the PulseDB experiments described below.
 
-The model takes 10 seconds of PPG at 125 Hz and estimates SBP and DBP. On the same 32-person, 3,200-window VitalDB test set used for the comparison below, its float-model MAE was **13.47 mmHg SBP / 7.26 mmHg DBP**. The firmware currently replays a real PPG window through a sample interface designed for a future live sensor. Wrist PPG performance and XIAO ESP32-S3 board execution have not yet been verified. See the [model and firmware instructions](tiny-bp-esp32/README.md) and [sensor interface](tiny-bp-esp32/firmware/SENSOR_INTERFACE.md).
+The model takes 10 seconds of PPG at 125 Hz and estimates SBP and DBP. On the same 32-person, 3,200-window VitalDB test set used for the comparison below, its float-model MAE was **13.47 mmHg SBP / 7.26 mmHg DBP**. The firmware replays a real PPG window through a sample interface designed for a future live sensor; it has been flashed and run on an ESP32-S3, where the INT8 model printed 108.00/60.00 mmHg for its embedded fixture (float reference 106.76/60.59) with a 15.31 ms median inference time. Live-sensor and wrist PPG performance remain unverified. See the [model and firmware instructions](tiny-bp-esp32/README.md) and [sensor interface](tiny-bp-esp32/firmware/SENSOR_INTERFACE.md).
 
 ---
 

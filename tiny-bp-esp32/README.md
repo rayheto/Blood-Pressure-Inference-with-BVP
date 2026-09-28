@@ -41,7 +41,7 @@ The ESP-IDF project is in `firmware/`. Its default source replays one **real** 1
 
 The shared sample contract and instructions for replacing the fixture with a 125 Hz live sensor callback are in [firmware/SENSOR_INTERFACE.md](firmware/SENSOR_INTERFACE.md). A window contains 10 seconds of raw PPG; after the first window, another can be inferred every second. Any lost sample resets the window.
 
-With ESP-IDF installed:
+With ESP-IDF v5.5 installed:
 
 ```bash
 cd tiny-bp-esp32/firmware
@@ -50,4 +50,8 @@ idf.py build
 idf.py -p YOUR_PORT flash monitor
 ```
 
-This project has not yet been compiled or flashed on a XIAO ESP32-S3 because that toolchain and board were unavailable. The embedded waveform is finger PPG; a wrist sensor needs signal-scale alignment, synchronized wrist reference data, and its own evaluation before interpreting BP output.
+The image links the esp-dl runtime and is about 1.11 MB, so `partitions.csv` gives the factory app 4 MB and `sdkconfig.defaults` selects 8 MB flash; IDF's 1 MB default factory partition is too small. `main/CMakeLists.txt` sets `cmake_dir` before including esp-dl's `utilities.cmake`, because esp-dl 3.3.11 references that variable without defining it. The resolved runtime is esp-dl 3.3.11, matching the `esp-ppq==1.3.11` that exported `model.espdl`.
+
+The firmware has been flashed and run on an ESP32-S3 (QFN56, rev v0.2, 8 MB flash, 8 MB PSRAM) over USB-Serial/JTAG. On the embedded case-2158 window the INT8 model printed **108.00 / 60.00 mmHg**, against the PC float model's 106.76/60.59, a 1.24/0.59 mmHg quantization difference. Outputs land on a 2 mmHg grid because `output_scale_mmhg` is 2.0 to avoid int8 saturation. Replaying that window 191 times gave a median `model.run()` time of **15.31 ms** (range 15.29–15.57 ms, the maximum on the first cold inference; SD 0.02 ms) at 160 MHz, timed by `esp_timer` around inference only. After the first window a new one is inferred every second, so inference uses roughly 1.5% of that budget.
+
+This is a CPU-only replay of one stored fixture, so it does not exercise a live sensor, the sliding-window path in real time, or the `push_samples` chunked interface. The embedded waveform is finger PPG; a wrist sensor needs signal-scale alignment, synchronized wrist reference data, and its own evaluation before interpreting BP output.
