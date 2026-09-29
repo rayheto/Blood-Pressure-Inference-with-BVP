@@ -11,8 +11,9 @@
     79.99392700195312
   ],
   "float_model_sbp_dbp_mmhg": [
-    106.75616455078125,
-    60.592281341552734
+    114.38856506347656,
+    62.033687591552734
   ],
-  "selection": "training subject nearest SBP 120 / DBP 80"
+  "selection": "training subject nearest SBP 120 / DBP 80",
+  "model": "ppg-current-seed20260929-fp32"
 }
