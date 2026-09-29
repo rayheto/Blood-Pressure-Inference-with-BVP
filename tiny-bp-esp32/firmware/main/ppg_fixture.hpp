@@ -8,6 +8,8 @@ inline constexpr float kReferenceSbp = 119.904488f;
 inline constexpr float kReferenceDbp = 79.993927f;
 inline constexpr float kExpectedFloatSbp = 114.388565f;
 inline constexpr float kExpectedFloatDbp = 62.0336876f;
+inline constexpr float kExpectedQuantSbp = 115.296875f;
+inline constexpr float kExpectedQuantDbp = 62.1015625f;
 inline constexpr float kRawPpg[1250] = {
     22.8047504f, 39.7945518f, 35.430294f, 38.0756035f, 37.0336189f, 37.9302101f, 37.6008911f, 38.1241684f,
     37.8796806f, 37.9215317f, 37.8812408f, 37.8976212f, 37.7029343f, 37.7147713f, 37.4993935f, 37.2795219f,

@@ -8,7 +8,7 @@ The input is a chronological 10-second raw PPG window, 1,250 samples at 125 Hz, 
 
 On five reused, case-disjoint VitalDB continuous test cases (4,198 valid 10-second windows), this seed had training-distribution-weighted SBP/DBP MAE **12.672/6.981 mmHg**. For reference, the uncorrected TinyBP on the same windows had **17.502/7.869 mmHg**. Full bin counts, per-bin MAE, 60/300-second change errors, and direction accuracy are in [metrics.json](metrics.json). The test cases were inspected during research; these numbers are not a fresh blind estimate. VitalDB operating-room finger PPG is not wrist PPG.
 
-The firmware runs this model in FP32 with static scratch arrays. No ESP-DL quantization or ESP32-S3 timing claim is transferred from the previous TinyBP INT8 firmware. The first hardware check should compare its real-fixture output with the PC value in `../firmware/main/ppg_fixture.json`, then time inference on the board. The fixture has a real PPG waveform and reference pressure, but it is a functional check, not an accuracy test.
+The firmware now embeds the complete `model.onnx` graph as `../firmware/main/models/s3/ppg_base.espdl` (W16A16). `export_onnx.py` creates ONNX from the tracked checkpoints; `quantize_espdl.py` uses separate, representative raw PPG windows for ESP-PPQ calibration. Its output uses quarter mmHg units, so firmware multiplies by 4. On 193 independent test windows, PC quantization simulation differed from ONNX float by mean absolute **0.773/0.327 mmHg**; see `quant_eval_193.json`. The board result still needs to be checked against the quantized fixture value in `../firmware/main/ppg_fixture.json`.
 
 To regenerate the firmware arrays from tracked files:
 

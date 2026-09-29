@@ -1,9 +1,11 @@
+#include "dl_model_base.hpp"
 #include "esp_timer.h"
-#include "ppg_base_model.hpp"
 #include "ppg_fixture.hpp"
 #include "ppg_input.hpp"
 #include <cstdint>
 #include <cstdio>
+
+extern const uint8_t ppg_base_espdl[] asm("_binary_ppg_base_espdl_start");
 
 namespace {
 struct FixtureCursor { std::size_t index = 0; };
@@ -22,8 +24,13 @@ float raw_window[bp_config::kWindowSamples];
 extern "C" void app_main(void) {
     static_assert(sizeof(bp_fixture::kRawPpg) / sizeof(float) ==
                   bp_config::kWindowSamples, "Fixture length mismatch");
-    std::printf("Model %s: replaying real VitalDB PPG, case %s, t=%d s\n",
-                bp::PpgBaseModel::tag(), bp_fixture::kCaseId, bp_fixture::kTimeSeconds);
+    std::printf("Model ppg-current-seed20260929-espdl-w16a16: "
+                "replaying real VitalDB PPG, case %s, t=%d s\n",
+                bp_fixture::kCaseId, bp_fixture::kTimeSeconds);
+    dl::Model model((const char *)ppg_base_espdl, fbs::MODEL_LOCATION_IN_FLASH_RODATA);
+    auto *input = model.get_inputs().begin()->second;
+    auto *output = model.get_outputs().begin()->second;
+    auto *input_data = static_cast<int16_t *>(input->data);
 
     FixtureCursor fixture;
     bp::SampleSource source{read_fixture, &fixture};
@@ -41,16 +48,25 @@ extern "C" void app_main(void) {
         }
         if (!window_buffer.take_window(raw_window)) continue;
 
-        float prediction[2];
+        // ESP-DL input is NWC (1 x 1250 x 1), int16 with model exponent.
+        for (std::size_t i = 0; i < bp_config::kWindowSamples; ++i) {
+            const float normalized =
+                (raw_window[i] - bp_config::kPpgMean) / bp_config::kPpgStd;
+            input_data[i] = dl::quantize<int16_t>(normalized,
+                                                   DL_RESCALE(input->exponent));
+        }
         const int64_t start_us = esp_timer_get_time();
-        bp::PpgBaseModel::infer(raw_window, prediction);
+        model.run();
         const int64_t elapsed_us = esp_timer_get_time() - start_us;
+        const auto *output_data = static_cast<const int16_t *>(output->data);
+        const float sbp = 4.0f * dl::dequantize(output_data[0], DL_SCALE(output->exponent));
+        const float dbp = 4.0f * dl::dequantize(output_data[1], DL_SCALE(output->exponent));
         std::printf("VitalDB replay: estimate %.2f / %.2f mmHg, "
-                    "reference %.2f / %.2f, float PC %.2f / %.2f, "
+                    "reference %.2f / %.2f, quant PC %.2f / %.2f, "
                     "inference %lld us\n",
-                    prediction[0], prediction[1], bp_fixture::kReferenceSbp,
-                    bp_fixture::kReferenceDbp, bp_fixture::kExpectedFloatSbp,
-                    bp_fixture::kExpectedFloatDbp,
+                    sbp, dbp, bp_fixture::kReferenceSbp,
+                    bp_fixture::kReferenceDbp, bp_fixture::kExpectedQuantSbp,
+                    bp_fixture::kExpectedQuantDbp,
                     static_cast<long long>(elapsed_us));
     }
 }

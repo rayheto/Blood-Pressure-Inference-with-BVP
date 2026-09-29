@@ -15,5 +15,6 @@
     62.033687591552734
   ],
   "selection": "training subject nearest SBP 120 / DBP 80",
-  "model": "ppg-current-seed20260929-fp32"
+  "model": "ppg-current-seed20260929-espdl-w16a16",
+  "quantized_model_sbp_dbp_mmhg": [115.296875, 62.1015625]
 }
